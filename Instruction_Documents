@@ -1,0 +1,10 @@
+Steps to Follows:
+1) Download the PyCharm & install libraries as follows:
+SeleniumLibrary
+RequestsLibrary
+
+2) Open the shared file : automation_test.robot
+
+3) Use the following command to run the Robot Framework Script:
+Robot automation_test.robot
+

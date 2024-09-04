@@ -1,0 +1,80 @@
+*** Settings ***
+Library    SeleniumLibrary
+Library    RequestsLibrary
+Library    JSONLibrary
+
+*** Variables ***
+${Browser}    Chrome
+${URL}     https://opensource-demo.orangehrmlive.com
+${USER_NAME}    Admin
+${PASSWORD}    admin123
+${API_ENDPOINT}       https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=50&offset=0&sortField=u.userName&sortOrder=ASC
+${EXPECTED_STATUS}    200
+
+*** Test Cases ***
+Successful Login
+    Open Browser    ${URL}    ${Browser}
+    BuiltIn.sleep    2s
+    SeleniumLibrary.maximize browser window
+    BuiltIn.sleep    2s
+    Input Text    xpath://*[@id="app"]/div[1]/div/div[1]/div/div[2]/div[2]/form/div[1]/div/div[2]/input    ${USER_NAME}
+    Input Text    xpath://*[@id="app"]/div[1]/div/div[1]/div/div[2]/div[2]/form/div[2]/div/div[2]/input    ${PASSWORD}
+    Click Button    xpath://*[@id="app"]/div[1]/div/div[1]/div/div[2]/div[2]/form/div[3]/button
+    builtin.sleep   3s
+    Click element    xpath://*[@id="app"]/div[1]/div[1]/header/div[1]/div[1]/span/h6
+    ${Header}=    Get Text    xpath://*[@id="app"]/div[1]/div[1]/header/div[1]/div[1]/span/h6
+    BuiltIn.log to console    ${\n}Received text: ${Header}
+    Builtin.sleep    3s
+
+Search User
+    Click element    xpath://*[@id="app"]/div[1]/div[1]/aside/nav/div[2]/ul/li[1]/a     #Admin Field
+    BuiltIn.sleep    2s
+    Click element    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[1]/div[1]/div[1]/h5     #System Users
+    ${Label}=    Get Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[1]/div[1]/div[1]/h5
+    BuiltIn.log to console    ${\n}Received text: ${Label}
+    builtin.sleep    1s
+    Input Text   xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/input    Admin     #Search Username
+    Click element    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[1]/div[2]/form/div[2]/button[2]       #Search Button
+    BuiltIn.sleep    2s
+    ${Number_of_Records}=    Get Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[2]/div[2]/div/span
+    BuiltIn.log to console    ${\n}Received text: ${Number_of_Records}
+    BuiltIn.sleep    2s
+    ${Employee Name}=   Get Text  xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div[4]/div
+    BuiltIn.log to console     ${\n}Received text: ${Employee Name}
+    BuiltIn.sleep    2s
+
+Add New User
+    Click element    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div[2]/div[1]/button    #Add User button
+    Builtin.sleep    2s
+    Click element    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[1]/div/div[2]/div   #User Role Dropdown
+    BuiltIn.sleep    2s
+    ${Dropdown List}=    Get Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[1]/div/div[2]/div
+    BuiltIn.log to console    ${\n}Received Dropdown options: ${Dropdown List}
+    Builtin.sleep    2s
+    Input Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[2]/div/div[2]/div/div/input   Timothy Lewis Amiano        #Employee Name
+    BuiltIn.sleep    2s
+    Click element    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[3]/div/div[2]/div/div     #Status
+    BuiltIn.sleep    2s
+    ${Status List}=    Get Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[3]/div/div[2]/div
+    BuiltIn.log to console    ${\n}Received Dropdown options: ${Status List}
+    Builtin.sleep    2s
+#    Select from list by label    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[3]/div/div[2]/div    Enabled
+#    BuiltIn.sleep    5s
+    Input Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[1]/div/div[4]/div/div[2]/input    Test123    #UserName
+    BuiltIn.sleep    2s
+    Input Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[2]/div/div[1]/div/div[2]/input    Qwerty@123    #Password
+    BuiltIn.sleep    2s
+    Input Text    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[2]/div/div[2]/div/div[2]/input    Qwerty@123    #Confirm Password
+    BuiltIn.sleep    2s
+    Click element    xpath://*[@id="app"]/div[1]/div[2]/div[2]/div/div/form/div[3]/button[2]      #Save button
+    BuiltIn.sleep    2s
+
+API Testing
+    [Documentation]    Test the API endpoint that provides product details.
+    Create Session    hrm    ${URL}
+    ${response}=    GET    hrm    ${API_ENDPOINT}
+    Should Be Equal As Numbers    ${response.status_code}    ${EXPECTED_STATUS}
+    Builtin.log to console    Response Status Code is ${response.status_code}
+    BuiltIn.sleep    2s
+
+
